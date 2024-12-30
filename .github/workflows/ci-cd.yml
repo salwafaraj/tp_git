@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - master 
+      - master
   pull_request:
     branches:
       - main
-      - master 
+      - master
 
 jobs:
   build:
@@ -38,7 +38,7 @@ jobs:
 
     # Archive les artefacts pour les étapes suivantes
     - name: Upload dist folder
-      uses: actions/upload-artifact@v3  # Utilisation de la version v3 de l'action
+      uses: actions/upload-artifact@v3
       with:
         name: dist
         path: dist/
@@ -48,6 +48,7 @@ jobs:
     needs: build
 
     steps:
+    # Checkout du code
     - name: Checkout code
       uses: actions/checkout@v2
 
@@ -79,7 +80,6 @@ jobs:
     - name: Deploy to GitHub Pages
       run: |
         mv dist/angularLabs public
-        # Déployer sur GitHub Pages
         npm install -g angular-cli-ghpages
         ngh --dir=public
       env:
