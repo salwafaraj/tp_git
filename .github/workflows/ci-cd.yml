@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - master
+      - master 
   pull_request:
     branches:
       - main
@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # Spécification explicite de la version d'Ubuntu
 
     steps:
     # Checkout du code
@@ -38,13 +38,13 @@ jobs:
 
     # Archive les artefacts pour les étapes suivantes
     - name: Upload dist folder
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3  # Utilisation de la version v3 de l'action
       with:
         name: dist
         path: dist/
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # Spécification explicite de la version d'Ubuntu
     needs: build
 
     steps:
@@ -60,7 +60,7 @@ jobs:
       run: npm run test -- --watch=false --browsers=ChromeHeadless
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # Spécification explicite de la version d'Ubuntu
     needs: test
 
     steps:
@@ -68,7 +68,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # Installer les dépendances et Angular CLI
+    # Installer Angular CLI et les dépendances
     - name: Install Angular CLI
       run: npm install -g @angular/cli@18.2.12
 
