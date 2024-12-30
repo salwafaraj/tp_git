@@ -4,74 +4,81 @@ on:
   push:
     branches:
       - main
-      - master
   pull_request:
     branches:
       - main
-      - master 
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    # Checkout du code
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'  # Vous pouvez ajuster la version de Node.js si nécessaire
+    # Installer Node.js et Angular CLI
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
 
-      - name: Install Angular CLI
-        run: npm install -g @angular/cli@18.2.12
+    - name: Install Angular CLI
+      run: npm install -g @angular/cli@18.2.12
 
-      - name: Install dependencies
-        run: npm install
+    # Installer les dépendances
+    - name: Install dependencies
+      run: npm install
 
-      - name: Build the application
-        run: ng build --configuration production
+    # Build de l'application
+    - name: Build Angular app
+      run: ng build --configuration production
 
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules/
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: dist
-          path: dist/
+    # Archive les artefacts pour les étapes suivantes
+    - name: Upload dist folder
+      uses: actions/upload-artifact@v2
+      with:
+        name: dist
+        path: dist/
 
   test:
     runs-on: ubuntu-latest
+    needs: build
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
+    # Installer les dépendances
+    - name: Install dependencies
+      run: npm install
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npm run test -- --watch=false --browsers=ChromeHeadless
+    # Exécuter les tests avec ChromeHeadless
+    - name: Run tests
+      run: npm run test -- --watch=false --browsers=ChromeHeadless
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    needs: test
 
-      - name: Deploy to GitHub Pages
-        run: |
-          mv dist/angularLabs public
-          echo "Deployment complete"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    # Checkout du code
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Installer les dépendances et Angular CLI
+    - name: Install Angular CLI
+      run: npm install -g @angular/cli@18.2.12
+
+    - name: Install dependencies
+      run: npm install
+
+    # Déployer sur GitHub Pages
+    - name: Deploy to GitHub Pages
+      run: |
+        mv dist/angularLabs public
+        # Déployer sur GitHub Pages
+        npm install -g angular-cli-ghpages
+        ngh --dir=public
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
