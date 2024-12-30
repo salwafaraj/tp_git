@@ -1,0 +1,18 @@
+/* about.component.css */
+.title {
+    font-family: Arial, sans-serif;
+    font-size: 2rem;
+    color: #4CAF50; /* Couleur verte */
+    text-align: center;
+    margin-top: 20px;
+}
+
+.description {
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333; /* Couleur gris foncé */
+    text-align: justify;
+    margin: 20px auto;
+    max-width: 800px;
+}
