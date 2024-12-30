@@ -1,39 +1,37 @@
-name: CI/CD Pipeline for Angular
+name: CI/CD Pipeline for Angular App
 
 on:
   push:
     branches:
       - main
-      - master # Le pipeline s'exécute lorsque vous poussez sur la branche main
   pull_request:
     branches:
-      - main 
-      - master # Il s'exécute aussi pour les pull requests vers la branche main
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Utilisation de l'OS Ubuntu pour exécuter le pipeline
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3  # Vérifie le code depuis le dépôt GitHub
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'  # Utilise la version 16 de Node.js (assurez-vous que c'est compatible avec Angular)
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
 
-      - name: Install dependencies
-        run: npm install  # Installe les dépendances du projet Angular
+    - name: Install dependencies
+      run: |
+        npm install
+        npm run build --prod
 
-      - name: Run tests
-        run: npm run test -- --watch=false --browsers=ChromeHeadless  # Exécute les tests (si vous avez des tests)
+    - name: Run tests
+      run: npm run test -- --watch=false --browsers=ChromeHeadlessCI
 
-      - name: Build Angular app
-        run: npm run build --prod --output-path=dist  # Compile l'application en mode production
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3  # Utilise un action GitHub pour déployer sur GitHub Pages
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # Utilise un token GitHub pour l'authentification
-          publish_dir: ./dist  # Spécifie le répertoire de sortie où les fichiers construits sont situés
+    - name: Deploy to GitHub Pages
+      run: |
+        npm install -g angular-cli-ghpages
+        ngh --dir=dist/mon-application-angular
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
